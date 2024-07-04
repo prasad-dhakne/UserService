@@ -1,15 +1,22 @@
 package com.prasad;
 
+import com.prasad.security.models.Authorization;
+import com.prasad.security.repositories.AuthorizationRepository;
 import com.prasad.security.services.JpaRegisteredClientRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Date;
 
 @SpringBootTest
 class UserServiceApplicationTests {
 
     @Autowired
     private JpaRegisteredClientRepository jpaRegisteredClientRepository;
+
+    @Autowired
+    private AuthorizationRepository authorizationRepository;
 
     @Test
     void contextLoads() {
@@ -32,6 +39,18 @@ class UserServiceApplicationTests {
 //                .build();
 //
 //        jpaRegisteredClientRepository.save(oidcClient);
+//    }
+
+//    @Test
+//    void insertTempAuthorization() {
+//        Authorization authorization = new Authorization();
+//        authorization.setId("pqr");
+//        Date date = new Date();
+//        authorization.setAccessTokenIssuedAt(date.toInstant());
+//        authorization.setAccessTokenExpiresAt(date.toInstant());
+//        authorization.setAuthorizationCodeValue("CP_bGHb3Nf2qAJ3NtKC17iGkZru3Wb4-DQpdk8kwywvBSPm98D3yEHEirQaxxguu0paXMg5VoiHgLEsrUBMByLAmm_hbaZ8V-GVJ8xR_kWVvYYGNMbYmwXKU5OF_UdH7");
+//        authorizationRepository.save(authorization);
+//
 //    }
 
 }

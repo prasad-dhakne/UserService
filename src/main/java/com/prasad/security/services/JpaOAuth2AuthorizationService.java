@@ -45,6 +45,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JpaOAuth2AuthorizationService(AuthorizationRepository authorizationRepository, RegisteredClientRepository registeredClientRepository) {
+        logger.info("instantiating JpaOAuth2AuthorizationService");
         Assert.notNull(authorizationRepository, "authorizationRepository cannot be null");
         Assert.notNull(registeredClientRepository, "registeredClientRepository cannot be null");
         this.authorizationRepository = authorizationRepository;
@@ -58,18 +59,22 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
 
     @Override
     public void save(OAuth2Authorization authorization) {
+        logger.info("saving authorization");
         Assert.notNull(authorization, "authorization cannot be null");
+        logger.info("Saving authorization {}", authorization);
         this.authorizationRepository.save(toEntity(authorization));
     }
 
     @Override
     public void remove(OAuth2Authorization authorization) {
+        logger.info("removing authorization {}", authorization);
         Assert.notNull(authorization, "authorization cannot be null");
         this.authorizationRepository.deleteById(authorization.getId());
     }
 
     @Override
     public OAuth2Authorization findById(String id) {
+        logger.info("finding authorization by id {}", id);
         Assert.hasText(id, "id cannot be empty");
         return this.authorizationRepository.findById(id).map(this::toObject).orElse(null);
     }
@@ -77,8 +82,8 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
     @Override
     @Transactional
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
+        logger.info("finding authorization by token {}", token);
         assert tokenType != null;
-        logger.info(tokenType.getValue() + " " + token);
         Assert.hasText(token, "token cannot be empty");
 
         Optional<Authorization> result;
@@ -107,6 +112,8 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
     }
 
     private OAuth2Authorization toObject(Authorization entity) {
+        logger.info("inside toObject");
+        logger.info("entity {}", entity);
         RegisteredClient registeredClient = this.registeredClientRepository.findById(entity.getRegisteredClientId());
         if (registeredClient == null) {
             throw new DataRetrievalFailureException(
@@ -178,6 +185,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
     }
 
     private Authorization toEntity(OAuth2Authorization authorization) {
+        logger.info("inside toEntity");
         Authorization entity = new Authorization();
         entity.setId(authorization.getId());
         entity.setRegisteredClientId(authorization.getRegisteredClientId());
@@ -252,7 +260,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
                 entity::setDeviceCodeExpiresAt,
                 entity::setDeviceCodeMetadata
         );
-
+        logger.info("entity {}", entity);
         return entity;
     }
 
@@ -262,6 +270,8 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
             Consumer<Instant> issuedAtConsumer,
             Consumer<Instant> expiresAtConsumer,
             Consumer<String> metadataConsumer) {
+        logger.info("inside setTokenValues");
+        logger.info("token {}", token);
         if (token != null) {
             OAuth2Token oAuth2Token = token.getToken();
             tokenValueConsumer.accept(oAuth2Token.getTokenValue());
@@ -272,6 +282,8 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
     }
 
     private Map<String, Object> parseMap(String data) {
+        logger.info("inside parseMap");
+        logger.info("data {}", data);
         try {
             return this.objectMapper.readValue(data, new TypeReference<Map<String, Object>>() {
             });
@@ -281,6 +293,8 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
     }
 
     private String writeMap(Map<String, Object> metadata) {
+        logger.info("inside writeMap");
+        logger.info("metadata {}", metadata);
         try {
             return this.objectMapper.writeValueAsString(metadata);
         } catch (Exception ex) {
